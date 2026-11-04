@@ -5,26 +5,63 @@ export default {
     'Formación musical en viola en el Conservatorio del Colegio Emil Friedman. Integrante de diversas orquestas juveniles con roles de liderazgo.',
   // Inicio de la partitura que se dibuja en la transición. Cambia "obra" y "compases" cuando elijas la pieza.
   // pos: medios espacios desde la línea central (Do4 en clave de Do en 3ª línea); + sube, − baja.
-  // dur: 'h' blanca, 'q' negra, 'e' corchea.
+  // dur: 'w' redonda, 'h' blanca, 'q' negra, 'e' corchea,
+  // 's' semicorchea, 't' fusa, 'x' semifusa.
   incipit: {
     obra: 'Obra por definir',
     compas: [4, 4],
     compases: [
       [
-        { pos: 0, dur: 'q' },
+        { pos: -3, dur: 'e' },
+        { pos: -1, dur: 'e' },
         { pos: 1, dur: 'e' },
-        { pos: 2, dur: 'e' },
-        { pos: 3, dur: 'q' },
         { pos: 4, dur: 'q' },
+        { pos: 3, dur: 's' },
+        { pos: 2, dur: 's' },
+        { pos: 1, dur: 's' },
+        { pos: 2, dur: 's' },
+        { pos: 3, dur: 's' },
+        { pos: 4, dur: 's' }
       ],
       [
-        { pos: 3, dur: 'e' },
-        { pos: 2, dur: 'e' },
-        { pos: 1, dur: 'q' },
-        { pos: -2, dur: 'h' },
+        { pos: 5, dur: 's' },
+        { pos: 4, dur: 's' },
+        { pos: 3, dur: 's' },
+        { pos: 2, dur: 's' },
+        { pos: 1, dur: 'e' },
+        { pos: 0, dur: 'q' },
+        { pos: -1, dur: 's' },
+        { pos: -2, dur: 's' },
+        { pos: -1, dur: 'q' },
       ],
     ],
   },
+  // Dos compases de distintas obras; en cada visita sale uno al azar (sin repetir el anterior).
+  // Se escriben en notación ABC. Lo básico:
+  //   L:1/16 fija la unidad (aquí, semicorchea): C = 1/16, C2 = corchea, C4 = negra, C8 = blanca, C16 = redonda, C3 = corchea con puntillo
+  //   Alturas en clave de Do: C, D, E... = octava de la línea central hacia arriba; C, (con coma) baja una octava; c sube una
+  //   Notas escritas juntas se unen con viga (CDEF); un espacio corta la viga (CD EF)
+  //   - ligadura de prolongación (f2-f), ( ) ligadura de expresión ((cd)), z silencio, ^ sostenido, _ bemol, = becuadro
+  //   | barra de compás, |] doble barra final. K: armadura (K:G = un sostenido) y clef=alto para la viola.
+  // porTranscribir: true = todavía no sale en la página.
+  incipits: [
+    {
+      compositor: 'Ejercicio',
+      obra: 'Frase de prueba',
+      abc: `X:1
+M:4/4
+L:1/16
+K:C clef=alto
+G,2B,2 D2 G4 FE DEFG | F2E2 D4 A,8 |]`,
+    },
+    {
+      compositor: 'G. P. Telemann',
+      obra: 'Concierto para viola',
+      porTranscribir: true,
+      // Pendiente: René enviará la imagen completa (clave, armadura y compás) para transcribir los dos compases.
+      abc: '',
+    },
+  ],
   // nota: figura que se usa como viñeta (los dibujos del boceto).
   movimientos: [
     {

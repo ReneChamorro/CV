@@ -3,7 +3,7 @@ import '@fontsource/barlow/800.css'
 import { useId, useRef } from 'react'
 import { useGSAP } from '../../lib/gsap'
 import { getSection } from '../../sections'
-import { waveTransition, CREST_A } from '../../transitions/waveTransition'
+import { waveTransition, SURFACE_RISE, BUBBLES } from '../../transitions/waveTransition'
 import data from '../../content/natacion'
 import Page from '../../components/Page'
 import IntroLine from '../../components/IntroLine'
@@ -74,17 +74,20 @@ export default function Natacion() {
   return (
     <Page title="Natación" className={styles.page}>
       <div ref={scope}>
-        <div className={styles.waveTrack} aria-hidden="true">
-          <div className={styles.waveAxis}>
-            <div className={styles.band} data-band>
-              <svg className={styles.crestLead} viewBox="0 0 80 1000" preserveAspectRatio="none">
-                <path data-crest d={CREST_A} />
-              </svg>
-              <svg className={styles.crestTrail} viewBox="0 0 80 1000" preserveAspectRatio="none">
-                <path data-crest d={CREST_A} />
-              </svg>
-            </div>
+        <div className={styles.flood} aria-hidden="true">
+          <div className={styles.water} data-water>
+            <svg className={styles.surface} viewBox="0 0 1000 300" preserveAspectRatio="none">
+              <path data-surface d={SURFACE_RISE} vectorEffect="non-scaling-stroke" />
+            </svg>
           </div>
+          <svg className={styles.floodBubbles} viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
+            {BUBBLES.map(({ cx, cy, r }, i) => (
+              <g key={i} data-flood-bubble data-cy={cy}>
+                <circle cx={cx} cy={cy} r={r} />
+                <circle cx={cx - r * 0.35} cy={cy - r * 0.35} r={r * 0.22} className={styles.shine} />
+              </g>
+            ))}
+          </svg>
         </div>
         <IntroLine d={section.line} color={section.color} />
         <BackHome className={styles.back} />

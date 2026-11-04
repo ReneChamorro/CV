@@ -1,18 +1,37 @@
 import '@fontsource/permanent-marker'
-import { useRef } from 'react'
+import '@fontsource-variable/geist-mono'
+import { useEffect, useRef } from 'react'
 import { gsap, useGSAP, playIntro, prefersReducedMotion } from '../../lib/gsap'
 import { getSection } from '../../sections'
+import videos from '../../content/skate'
 import Page from '../../components/Page'
 import IntroLine from '../../components/IntroLine'
 import BackHome from '../../components/BackHome'
+import ClipCard, { loadInstagram } from './ClipCard'
 import styles from './Skate.module.css'
 
 const section = getSection('skate')
 const RAMP = 'M40,40 C40,220 140,280 280,280 L720,280 C860,280 960,220 960,40'
 
-// Borrador: la línea ondulada del boceto como perfil de rampa y una tabla que la recorre.
+// La línea ondulada del boceto como perfil de rampa, una tabla que la recorre y debajo la galería de videos.
 export default function Skate() {
   const scope = useRef()
+  const gallery = useRef()
+
+  // El embed de Instagram se carga solo cuando la galería se acerca a la pantalla.
+  useEffect(() => {
+    if (!videos.some((v) => v.reel && !v.clip)) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return
+        observer.disconnect()
+        loadInstagram().catch(() => {})
+      },
+      { rootMargin: '300px' },
+    )
+    observer.observe(gallery.current)
+    return () => observer.disconnect()
+  }, [])
 
   useGSAP(
     () => {
@@ -38,22 +57,30 @@ export default function Skate() {
       <div ref={scope}>
         <IntroLine d={section.line} color={section.color} />
         <BackHome className={styles.back} />
-        <div className={styles.text}>
-          <h1 className={styles.title} data-skate-reveal>
-            Skate
-          </h1>
-          <p className={styles.soon} data-skate-reveal>
-            Próximamente: clips y videos
-          </p>
-        </div>
-        <svg className={styles.ramp} viewBox="0 0 1000 320" aria-hidden="true">
-          <path data-ramp d={RAMP} />
-          <g data-board>
-            <rect x="-40" y="-14" width="80" height="7" rx="3.5" />
-            <circle cx="-24" cy="-4" r="4.5" />
-            <circle cx="24" cy="-4" r="4.5" />
-          </g>
-        </svg>
+        <section className={styles.hero}>
+          <div className={styles.text}>
+            <h1 className={styles.title} data-skate-reveal>
+              Skate
+            </h1>
+            <p className={styles.soon} data-skate-reveal>
+              Clips y videos que monté
+            </p>
+          </div>
+          <svg className={styles.ramp} viewBox="0 0 1000 320" aria-hidden="true">
+            <path data-ramp d={RAMP} />
+            <g data-board>
+              <rect x="-40" y="-14" width="80" height="7" rx="3.5" />
+              <circle cx="-24" cy="-4" r="4.5" />
+              <circle cx="24" cy="-4" r="4.5" />
+            </g>
+          </svg>
+        </section>
+
+        <section className={styles.gallery} ref={gallery} aria-label="Videos de skate">
+          {videos.map((video, i) => (
+            <ClipCard key={i} video={video} index={i} />
+          ))}
+        </section>
       </div>
     </Page>
   )

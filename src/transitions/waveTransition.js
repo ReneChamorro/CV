@@ -1,14 +1,31 @@
 import { gsap, playIntro } from '../lib/gsap'
 
-// Borde de la ola (viewBox 0 0 80 1000): dos fases que se alternan mientras cruza la pantalla.
-export const CREST_A =
-  'M0,0 H40 C75,60 75,65 40,125 S5,190 40,250 S75,315 40,375 S5,440 40,500 S75,565 40,625 S5,690 40,750 S75,815 40,875 S5,940 40,1000 H0 Z'
-export const CREST_B =
-  'M0,0 H40 C5,60 5,65 40,125 S75,190 40,250 S5,315 40,375 S75,440 40,500 S5,565 40,625 S75,690 40,750 S5,815 40,875 S75,940 40,1000 H0 Z'
+// Superficie del agua (viewBox 0 0 1000 300, el agua queda debajo de la curva).
+// Sube inclinada desde la izquierda, se aplana al cubrir y baja inclinada hacia el otro lado.
+export const SURFACE_RISE =
+  'M0,40 C150,30 250,60 400,90 C550,120 650,150 800,200 C880,225 950,250 1000,280 L1000,300 L0,300 Z'
+const SURFACE_FULL =
+  'M0,150 C150,110 250,110 400,150 C550,190 650,190 800,150 C880,130 950,125 1000,140 L1000,300 L0,300 Z'
+const SURFACE_DRAIN =
+  'M0,260 C150,250 250,220 400,200 C550,180 650,120 800,90 C880,75 950,60 1000,50 L1000,300 L0,300 Z'
 
-const vmax = () => Math.max(window.innerWidth, window.innerHeight) / 100
+// Burbujas con semilla fija: el mismo dibujo en cada visita (viewBox 0 0 1000 1000).
+function seeded(seed) {
+  return () => {
+    seed = (seed + 0x6d2b79f5) | 0
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed)
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+const rand = seeded(2013)
+export const BUBBLES = Array.from({ length: 38 }, () => ({
+  cx: Math.round(rand() * 1000),
+  cy: Math.round(300 + rand() * 680),
+  r: Math.round(5 + rand() ** 2 * 26),
+}))
 
-// Una banda de agua cruza en diagonal y tapa el cambio; detrás queda la piscina.
+// El agua sube y tapa el cambio; al bajar suelta burbujas que revientan y deja la piscina.
 // Luego, carril por carril: se tiende la carrilera y el texto "nada" desde el taco.
 export function waveTransition(root) {
   const q = gsap.utils.selector(root)
@@ -19,15 +36,29 @@ export function waveTransition(root) {
   tl.set(q('[data-pool-scene]'), { autoAlpha: 0 })
     .set(ropes, { clipPath: 'inset(0% 100% 0% 0%)' })
     .set(swimmers, { autoAlpha: 0, x: () => -0.3 * window.innerWidth })
-    .set(q('[data-band]'), { x: () => -95 * vmax() - 100 })
-    .to(q('[data-crest]'), { morphSVG: CREST_B, duration: 0.3, repeat: 5, yoyo: true, ease: 'sine.inOut' }, 0)
-    .to(q('[data-band]'), { x: () => 230 * vmax() + 100, duration: 1.7, ease: 'power2.inOut' }, 0.1)
-    .to(q('[data-intro-line]'), { autoAlpha: 0, duration: 0.2 }, 0.6)
-    // A mitad de recorrido la banda cubre toda la pantalla: ahí aparece la piscina.
-    .set(q('[data-pool-scene]'), { autoAlpha: 1 }, 0.95)
+    .set(q('[data-water]'), { yPercent: 130 })
+    .set(q('[data-flood-bubble]'), { autoAlpha: 0, scale: 0.6, transformOrigin: '50% 50%' })
+    .to(q('[data-water]'), { yPercent: 0, duration: 0.8, ease: 'power2.inOut' }, 0)
+    .to(q('[data-surface]'), { morphSVG: SURFACE_FULL, duration: 0.8, ease: 'sine.inOut' }, 0)
+    .to(q('[data-intro-line]'), { autoAlpha: 0, duration: 0.2 }, 0.3)
+    // Con la pantalla cubierta aparece la piscina debajo.
+    .set(q('[data-pool-scene]'), { autoAlpha: 1 }, 0.85)
+    .to(q('[data-flood-bubble]'), { autoAlpha: 1, scale: 1, duration: 0.25, stagger: { each: 0.008, from: 'random' } }, 0.7)
+    .to(q('[data-water]'), { yPercent: 130, duration: 0.9, ease: 'power2.inOut' }, 1)
+    .to(q('[data-surface]'), { morphSVG: SURFACE_DRAIN, duration: 0.9, ease: 'sine.inOut' }, 1)
+    .to(q('[data-flood-bubble]'), { y: -90, duration: 1.1, ease: 'power1.out' }, 1)
+    // Revientan de arriba hacia abajo, a medida que la superficie baja y las alcanza.
+    .to(
+      q('[data-flood-bubble]'),
+      {
+        keyframes: [{ scale: 1.15, duration: 0.08 }, { scale: 0.2, autoAlpha: 0, duration: 0.14 }],
+        delay: (i, el) => ((Number(el.dataset.cy) - 300) / 700) * 0.75,
+      },
+      1.05,
+    )
 
   ropes.forEach((rope, i) => {
-    tl.to(rope, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.45, ease: 'power2.inOut' }, i === 0 ? 1.5 : '>-0.1')
+    tl.to(rope, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.45, ease: 'power2.inOut' }, i === 0 ? 1.7 : '>-0.1')
 
     const swimmer = swimmers[i]
     if (!swimmer) return

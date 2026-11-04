@@ -8,6 +8,7 @@ export default {
     { titulo: 'Competencias nacionales', detalle: 'Venezuela · eventos por agregar', marca: '--:--.--' },
     { titulo: 'Especialidad', detalle: 'Estilo y distancia por definir', marca: '--:--.--' },
     { titulo: 'Mejor marca personal', detalle: 'Por agregar', marca: '--:--.--' },
+    { titulo: 'Relevos', detalle: 'Pruebas y equipo por agregar', marca: '--:--.--' },
     { titulo: 'Lo que me dejó el agua', detalle: 'Disciplina · constancia · trabajo en equipo', marca: '' },
   ],
 }

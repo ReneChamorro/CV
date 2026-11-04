@@ -1,7 +1,24 @@
 // Pentagrama en unidades: líneas cada 12, línea superior en y=0, central (Do4 en clave de Do) en y=24.
 const S = 12
 const posY = (pos) => 2 * S - pos * (S / 2)
-const WIDTH = { e: 30, q: 40, h: 60 }
+const DURATIONS = {
+  w: { width: 68, hollow: true, stem: false, flags: 0 },
+  h: { width: 60, hollow: true, stem: true, flags: 0 },
+  q: { width: 40, hollow: false, stem: true, flags: 0 },
+  e: { width: 30, hollow: false, stem: true, flags: 1 },
+  s: { width: 30, hollow: false, stem: true, flags: 2 },
+  t: { width: 34, hollow: false, stem: true, flags: 3 },
+  x: { width: 38, hollow: false, stem: true, flags: 4 },
+}
+const NOTE_TYPES = {
+  redonda: 'w',
+  blanca: 'h',
+  negra: 'q',
+  corchea: 'e',
+  semicorchea: 's',
+  fusa: 't',
+  semifusa: 'x',
+}
 const FIRST_NOTE_X = 84
 
 // Clave de Do (SMuFL cClef, U+E05C) de la fuente Bravura de Steinberg, licencia SIL Open Font License 1.1.
@@ -14,12 +31,19 @@ function flag(x, y, dir) {
   return `M${x},${y} C${x + 1},${y + 7 * dir} ${x + 11},${y + 10 * dir} ${x + 8},${y + 22 * dir} C${x + 14},${y + 12 * dir} ${x + 8},${y + 6 * dir} ${x},${y + 5 * dir} Z`
 }
 
+function getDuration(dur) {
+  const duration = DURATIONS[dur]
+  if (!duration) throw new Error(`Duración de nota no soportada: ${dur}`)
+  return duration
+}
+
 function Note({ x, pos, dur }) {
   const y = posY(pos)
   const up = pos < 0
   const stemX = up ? x + 5.9 : x - 5.9
   const stemEnd = up ? y - 3.5 * S : y + 3.5 * S
-  const hollow = dur === 'h'
+  const { hollow, stem, flags } = getDuration(dur)
+  const flagDirection = up ? 1 : -1
 
   return (
     <g data-note>
@@ -33,8 +57,14 @@ function Note({ x, pos, dur }) {
         stroke="currentColor"
         strokeWidth={hollow ? 1.8 : 0}
       />
-      <line x1={stemX} y1={y} x2={stemX} y2={stemEnd} stroke="currentColor" strokeWidth="1.3" />
-      {dur === 'e' && <path d={flag(stemX, stemEnd, up ? 1 : -1)} fill="currentColor" />}
+      {stem && <line x1={stemX} y1={y} x2={stemX} y2={stemEnd} stroke="currentColor" strokeWidth="1.3" />}
+      {Array.from({ length: flags }, (_, i) => (
+        <path
+          key={i}
+          d={flag(stemX, stemEnd + i * 7 * flagDirection, flagDirection)}
+          fill="currentColor"
+        />
+      ))}
     </g>
   )
 }
@@ -45,8 +75,9 @@ function layout(compases) {
   let x = FIRST_NOTE_X
   compases.forEach((compas) => {
     compas.forEach((note) => {
+      const { width } = getDuration(note.dur)
       notes.push({ ...note, x })
-      x += WIDTH[note.dur]
+      x += width
     })
     bars.push(x - 10)
     x += 16
@@ -105,11 +136,20 @@ export default function Staff({ incipit, className }) {
 
 // Viñetas: las figuras dibujadas en el boceto.
 export function NoteGlyph({ tipo, className }) {
-  const flags = { negra: 0, corchea: 1, semicorchea: 2 }[tipo] ?? 0
+  const { hollow, stem, flags } = getDuration(NOTE_TYPES[tipo] ?? 'q')
   return (
     <svg className={className} viewBox="0 0 24 40" aria-hidden="true">
-      <ellipse cx="8" cy="33" rx="6.4" ry="4.4" transform="rotate(-20 8 33)" fill="currentColor" />
-      <line x1="13.9" y1="33" x2="13.9" y2="3" stroke="currentColor" strokeWidth="1.4" />
+      <ellipse
+        cx="8"
+        cy="33"
+        rx="6.4"
+        ry="4.4"
+        transform="rotate(-20 8 33)"
+        fill={hollow ? 'none' : 'currentColor'}
+        stroke="currentColor"
+        strokeWidth={hollow ? 1.8 : 0}
+      />
+      {stem && <line x1="13.9" y1="33" x2="13.9" y2="3" stroke="currentColor" strokeWidth="1.4" />}
       {Array.from({ length: flags }, (_, i) => (
         <path key={i} d={flag(13.9, 3 + i * 7, 1)} fill="currentColor" />
       ))}

@@ -18,8 +18,8 @@
   font-family: 'Barlow', 'Geist Variable', sans-serif;
 }
 
-/* Ola diagonal: una banda de agua que cruza de arriba-izquierda a abajo-derecha */
-.waveTrack {
+/* Inundación: el agua sube con la superficie inclinada, cubre la pantalla y baja soltando burbujas */
+.flood {
   position: fixed;
   inset: 0;
   z-index: 30;
@@ -27,45 +27,52 @@
   pointer-events: none;
 }
 
-/* Eje girado 45°: la banda se mueve en x dentro de él y cruza en diagonal */
-.waveAxis {
+.water {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: rotate(45deg);
+  inset: 0;
+  background: linear-gradient(180deg, #5ec0ef 0%, #2f86c8 45%, #1d4f8f 100%);
 }
 
-.band {
+/* Rayos de luz que entran desde la superficie */
+.water::after {
+  content: '';
   position: absolute;
-  top: -150vmax;
-  left: -150vmax;
-  width: 160vmax;
-  height: 300vmax;
-  background: linear-gradient(90deg, var(--wave), #63c3f0 60%, var(--wave));
+  inset: 0;
+  background: repeating-linear-gradient(105deg, rgba(255, 255, 255, 0.09) 0 38px, transparent 38px 150px);
+  mask-image: linear-gradient(180deg, #000, transparent 75%);
 }
 
-.crestLead,
-.crestTrail {
+.surface {
   position: absolute;
-  top: 0;
-  width: 80px;
+  bottom: calc(100% - 1px);
+  left: 0;
+  width: 100%;
+  height: 30vh;
+  overflow: visible;
+}
+
+.surface path {
+  fill: #5ec0ef;
+  stroke: rgba(255, 255, 255, 0.9);
+  stroke-width: 3;
+}
+
+.floodBubbles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
   height: 100%;
 }
 
-.crestLead {
-  right: -79px;
-}
-
-.crestTrail {
-  left: -79px;
-  scale: -1 1;
-}
-
-.crestLead path,
-.crestTrail path {
-  fill: var(--wave);
+.floodBubbles circle {
+  fill: rgba(255, 255, 255, 0.12);
   stroke: rgba(255, 255, 255, 0.85);
-  stroke-width: 3;
+  stroke-width: 1.5;
+}
+
+.floodBubbles .shine {
+  fill: rgba(255, 255, 255, 0.8);
+  stroke: none;
 }
 
 .back {

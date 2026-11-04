@@ -5,7 +5,7 @@ import '@fontsource/cormorant-garamond/600-italic.css'
 import '@fontsource/cormorant-garamond/700.css'
 import '@fontsource/eb-garamond/400.css'
 import '@fontsource/eb-garamond/400-italic.css'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useGSAP } from '../../lib/gsap'
 import { getSection } from '../../sections'
 import { staffTransition } from '../../transitions/staffTransition'
@@ -13,7 +13,8 @@ import data from '../../content/musica'
 import Page from '../../components/Page'
 import IntroLine from '../../components/IntroLine'
 import BackHome from '../../components/BackHome'
-import Staff, { NoteGlyph } from './Staff'
+import { NoteGlyph } from './Staff'
+import Score, { pickIncipit } from './Score'
 import styles from './Musica.module.css'
 
 const section = getSection('musica')
@@ -30,6 +31,7 @@ function Video({ video }) {
 
 export default function Musica() {
   const scope = useRef()
+  const [incipit] = useState(() => pickIncipit(data.incipits))
   useGSAP(() => staffTransition(scope.current), { scope })
 
   return (
@@ -39,9 +41,9 @@ export default function Musica() {
         <BackHome className={styles.back} />
 
         <section className={styles.hero}>
-          <Staff incipit={data.incipit} className={styles.staff} />
+          <Score incipit={incipit} className={styles.staff} />
           <p className={styles.caption} data-music-reveal>
-            Incipit · {data.incipit.obra}
+            Incipit · {incipit.compositor}, {incipit.obra}
           </p>
           <h1 className={styles.name} data-music-reveal>
             {data.nombre}
