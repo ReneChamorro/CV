@@ -1,0 +1,91 @@
+.home {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  background: #f2f1ed;
+  color: #1a1a1a;
+}
+
+.header {
+  position: absolute;
+  top: clamp(24px, 8vh, 72px);
+  left: 10vw;
+  right: 10vw;
+}
+
+.name {
+  font-weight: 500;
+  font-size: clamp(2.4rem, 6.5vw, 4.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+}
+
+.tag {
+  margin-top: 12px;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6b665e;
+}
+
+/* En pantallas bajas el subtítulo chocaría con la línea central */
+@media (max-height: 560px) {
+  .tag {
+    display: none;
+  }
+}
+
+.nav {
+  position: absolute;
+  top: calc(50% + 72px);
+  left: 10vw;
+  right: 10vw;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 14px 20px;
+}
+
+.link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  font-weight: 500;
+  text-decoration: none;
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.link:active {
+  transform: scale(0.97);
+}
+
+/* Un trazo corto del color del ámbito: la misma línea, en pequeño */
+.link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 6px;
+  height: 2px;
+  background: var(--c);
+  opacity: 0;
+  transform: scaleX(0.3);
+  transform-origin: left;
+  transition:
+    transform 220ms cubic-bezier(0.23, 1, 0.32, 1),
+    opacity 220ms ease;
+}
+
+.link:focus-visible::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .link:hover::after {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}

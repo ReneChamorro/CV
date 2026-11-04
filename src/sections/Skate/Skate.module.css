@@ -1,0 +1,68 @@
+.page {
+  --orange: #f07b1d;
+  --ink: #1c1712;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  min-height: 100svh;
+  padding: 72px 16px 48px;
+  overflow: hidden;
+  background-color: #f2f1ed;
+  background-image: radial-gradient(rgba(240, 123, 29, 0.18) 1.2px, transparent 1.4px);
+  background-size: 9px 9px;
+  color: var(--ink);
+}
+
+.back {
+  font-family: 'Permanent Marker', cursive;
+  color: var(--ink);
+}
+
+.text {
+  text-align: center;
+}
+
+.title {
+  display: inline-block;
+  padding: 4px 24px;
+  font-family: 'Permanent Marker', cursive;
+  font-weight: 400;
+  font-size: clamp(3.5rem, 14vw, 8rem);
+  line-height: 1.1;
+  color: #fff;
+  background: var(--orange);
+  transform: rotate(-3deg);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+
+.soon {
+  margin-top: 20px;
+  font-family: 'Permanent Marker', cursive;
+  font-size: 1.1rem;
+}
+
+.ramp {
+  width: min(900px, 100%);
+  height: auto;
+  overflow: visible;
+}
+
+.ramp path {
+  fill: none;
+  stroke: var(--orange);
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.ramp rect {
+  fill: var(--ink);
+}
+
+.ramp circle {
+  fill: var(--orange);
+  stroke: var(--ink);
+  stroke-width: 2;
+}
