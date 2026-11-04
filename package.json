@@ -11,11 +11,10 @@
   "dependencies": {
     "@fontsource-variable/geist": "^5.3.0",
     "@fontsource-variable/geist-mono": "^5.3.0",
-    "@fontsource/barlow-condensed": "^5.3.0",
+    "@fontsource/barlow": "^5.3.0",
     "@fontsource/cormorant-garamond": "^5.3.0",
     "@fontsource/eb-garamond": "^5.3.0",
     "@fontsource/permanent-marker": "^5.3.0",
-    "@fontsource/share-tech-mono": "^5.3.0",
     "@gsap/react": "^2.1.2",
     "gsap": "^3.15.0",
     "react": "^19.3.1",

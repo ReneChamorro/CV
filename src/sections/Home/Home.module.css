@@ -3,19 +3,36 @@
   min-height: 100svh;
   overflow: hidden;
   background: #f2f1ed;
-  color: #1a1a1a;
+}
+
+.scope {
+  --ink: #1a1a1a;
+
+  position: relative;
+  min-height: 100svh;
+  color: var(--ink);
+}
+
+/* Una capa de fondo por ámbito; GSAP enciende la del ámbito en hover */
+.bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
 }
 
 .header {
   position: absolute;
-  top: clamp(24px, 8vh, 72px);
+  top: clamp(24px, 7vh, 64px);
   left: 10vw;
   right: 10vw;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .name {
   font-weight: 500;
-  font-size: clamp(2.4rem, 6.5vw, 4.5rem);
+  font-size: clamp(2.4rem, 6vw, 4.2rem);
   line-height: 1.05;
   letter-spacing: -0.035em;
 }
@@ -25,67 +42,174 @@
   font-size: 0.8rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #6b665e;
+  color: color-mix(in srgb, var(--ink) 65%, transparent);
 }
 
-/* En pantallas bajas el subtítulo chocaría con la línea central */
-@media (max-height: 560px) {
-  .tag {
-    display: none;
-  }
-}
-
-.nav {
+.strips {
   position: absolute;
-  top: calc(50% + 72px);
-  left: 10vw;
-  right: 10vw;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 14px 20px;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
 }
 
-.link {
+.strip {
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  font-size: clamp(1rem, 1.8vw, 1.2rem);
-  font-weight: 500;
+  color: inherit;
   text-decoration: none;
-  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+  border-left: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
 }
 
-.link:active {
-  transform: scale(0.97);
+.strip:first-child {
+  border-left: 0;
 }
 
-/* Un trazo corto del color del ámbito: la misma línea, en pequeño */
-.link::after {
+/* Trazo del color del ámbito arriba de la columna activa */
+.strip::before {
   content: '';
   position: absolute;
+  top: 0;
   left: 0;
   right: 0;
-  bottom: 6px;
-  height: 2px;
+  height: 3px;
   background: var(--c);
-  opacity: 0;
-  transform: scaleX(0.3);
+  transform: scaleX(0.2);
   transform-origin: left;
+  opacity: 0;
   transition:
-    transform 220ms cubic-bezier(0.23, 1, 0.32, 1),
-    opacity 220ms ease;
+    transform 260ms cubic-bezier(0.23, 1, 0.32, 1),
+    opacity 200ms ease;
 }
 
-.link:focus-visible::after {
+.strip:focus-visible {
+  outline-offset: -4px;
+}
+
+.strip:focus-visible::before {
   opacity: 1;
   transform: scaleX(1);
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .link:hover::after {
+  .strip:hover::before {
     opacity: 1;
     transform: scaleX(1);
+  }
+}
+
+.stripBody {
+  position: absolute;
+  inset: 0;
+  padding: 0 clamp(12px, 1.8vw, 28px);
+  overflow: hidden;
+}
+
+.label {
+  position: absolute;
+  top: calc(50% - 116px);
+  font-family: var(--font);
+  font-weight: var(--weight);
+  font-style: var(--style);
+  font-size: clamp(1.15rem, 2vw, 1.7rem);
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.miniLine {
+  display: none;
+}
+
+.stats {
+  position: absolute;
+  top: calc(50% + 92px);
+  display: grid;
+  gap: 14px;
+  margin: 0;
+}
+
+.stats div {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.stats dd {
+  margin: 0;
+  font-family: var(--font);
+  font-weight: var(--weight);
+  font-style: var(--style);
+  font-size: clamp(1.25rem, 2.3vw, 2.1rem);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.stats dt {
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  color: color-mix(in srgb, currentColor 72%, transparent);
+}
+
+/* Móvil: franjas horizontales, cada una ya en su propia estética */
+@media (max-width: 767px) {
+  .home,
+  .scope {
+    min-height: auto;
+    overflow: visible;
+  }
+
+  .home :global([data-intro-line]) {
+    display: none;
+  }
+
+  .header {
+    position: static;
+    padding: 72px 16px 28px;
+  }
+
+  .strips {
+    position: static;
+    grid-template-columns: 1fr !important;
+  }
+
+  .strip {
+    border-left: 0;
+    background: var(--strip-bg);
+    color: var(--strip-ink);
+  }
+
+  .stripBody {
+    position: relative;
+    inset: auto;
+    padding: 24px 16px 28px;
+  }
+
+  .label,
+  .stats {
+    position: static;
+  }
+
+  .label {
+    display: block;
+    font-size: 1.6rem;
+  }
+
+  .miniLine {
+    display: block;
+    width: 100%;
+    height: 36px;
+    margin: 12px 0 16px;
+    overflow: visible;
+  }
+
+  .miniLine path {
+    fill: none;
+    stroke: var(--c);
+    stroke-width: 2;
+  }
+
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 28px;
   }
 }

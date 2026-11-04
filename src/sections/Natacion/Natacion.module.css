@@ -1,219 +1,287 @@
-.pool {
-  --water: #0e6aa8;
-  --deep: #0d3b82;
-  --foam: rgba(255, 255, 255, 0.75);
-  --led: #ffb627;
-  --condensed: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  --digits: 'Share Tech Mono', ui-monospace, monospace;
+.page {
+  --navy: #13245c;
+  --red: #e2232a;
+  --tile: #1f4fa8;
+  --tile-light: #3a6fd0;
+  --deck: #f5f7fa;
+  --water-top: #c4ebfb;
+  --water-bottom: #8fd6f5;
+  --wave: #3aaee8;
+  --gutter: 8px;
+  --deck-col: clamp(48px, 7vw, 76px);
 
   position: relative;
   min-height: 100svh;
   overflow-x: clip;
-  color: #fff;
-  background: #f2f1ed;
+  background: var(--deck);
+  color: var(--navy);
+  font-family: 'Barlow', 'Geist Variable', sans-serif;
 }
 
-.flood {
+/* Ola diagonal: una banda de agua que cruza de arriba-izquierda a abajo-derecha */
+.waveTrack {
   position: fixed;
   inset: 0;
-  z-index: 0;
-  background: var(--water);
+  z-index: 30;
+  overflow: hidden;
+  pointer-events: none;
 }
 
-/* Reflejos de luz sobre el fondo de la piscina */
-.flood::after {
-  content: '';
+/* Eje girado 45°: la banda se mueve en x dentro de él y cruza en diagonal */
+.waveAxis {
   position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 40% 18% at 20% 30%, rgba(255, 255, 255, 0.12), transparent 70%),
-    radial-gradient(ellipse 30% 14% at 75% 65%, rgba(255, 255, 255, 0.1), transparent 70%),
-    radial-gradient(ellipse 35% 16% at 45% 90%, rgba(255, 255, 255, 0.08), transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: rotate(45deg);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .flood::after {
-    animation: caustics 9s ease-in-out infinite alternate;
-  }
+.band {
+  position: absolute;
+  top: -150vmax;
+  left: -150vmax;
+  width: 160vmax;
+  height: 300vmax;
+  background: linear-gradient(90deg, var(--wave), #63c3f0 60%, var(--wave));
 }
 
-@keyframes caustics {
-  to {
-    transform: translate(3%, -2%) scale(1.05);
-  }
-}
-
-.crest {
+.crestLead,
+.crestTrail {
   position: absolute;
   top: 0;
-  right: -79px;
   width: 80px;
   height: 100%;
 }
 
-.crest path {
-  fill: var(--water);
-  stroke: var(--foam);
+.crestLead {
+  right: -79px;
+}
+
+.crestTrail {
+  left: -79px;
+  scale: -1 1;
+}
+
+.crestLead path,
+.crestTrail path {
+  fill: var(--wave);
+  stroke: rgba(255, 255, 255, 0.85);
   stroke-width: 3;
 }
 
 .back {
-  color: #fff;
-  background: rgba(11, 13, 16, 0.72);
-  border-radius: 4px;
-  font-family: var(--condensed);
-  font-size: 1rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  color: var(--navy);
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  font-weight: 600;
 }
 
-.inner {
-  position: relative;
-  z-index: 1;
-  max-width: 960px;
+.scene {
+  max-width: 1040px;
   margin: 0 auto;
-  padding: 72px 16px 64px;
+  padding: 80px 16px 72px;
 }
 
-.board {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 16px;
+.head {
   margin-bottom: 36px;
-  padding: 18px 22px;
-  background: #0b0d10;
-  border: 3px solid #23272e;
-  border-radius: 6px;
-  box-shadow: 0 12px 30px rgba(3, 20, 50, 0.35);
 }
 
-.boardLabel {
-  display: block;
-  font-family: var(--digits);
-  font-size: 0.8rem;
+.kicker {
+  font-size: 0.85rem;
+  font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #8b929c;
+  color: color-mix(in srgb, var(--navy) 70%, transparent);
 }
 
-.boardName {
-  margin-top: 4px;
-  font-family: var(--condensed);
-  font-weight: 700;
-  font-size: clamp(2rem, 6vw, 3.4rem);
+.title {
+  margin-top: 6px;
+  font-weight: 800;
+  font-size: clamp(2.6rem, 8vw, 4.6rem);
   line-height: 1;
+  letter-spacing: -0.01em;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
 }
 
-.boardYear {
-  font-family: var(--digits);
-  font-size: clamp(2rem, 6vw, 3.2rem);
-  line-height: 1;
-  text-align: right;
-  color: var(--led);
-  text-shadow: 0 0 12px rgba(255, 182, 39, 0.5);
+.since {
+  margin-top: 10px;
+  font-weight: 800;
+  font-size: clamp(1.05rem, 2.4vw, 1.4rem);
+  color: var(--red);
+  text-transform: uppercase;
 }
 
-.lanes {
+.squiggle {
+  display: block;
+  width: 120px;
+  height: 12px;
+  margin-top: 14px;
+}
+
+.squiggle path {
+  fill: none;
+  stroke: var(--wave);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+/* Piscina: columna de deck con tacos + agua con rebosadero de mosaico */
+.poolDeck {
+  position: relative;
   display: grid;
+  grid-template-columns: var(--deck-col) 1fr;
+  padding: var(--gutter) var(--gutter) var(--gutter) 0;
+  border-radius: 6px;
+  background:
+    linear-gradient(90deg, #ffffff, var(--deck)) 0 0 / var(--deck-col) 100% no-repeat,
+    var(--deck);
+  box-shadow: 0 18px 40px rgba(19, 36, 92, 0.12);
 }
 
-.lane {
-  overflow: hidden;
+.water {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--deck-col);
+  right: 0;
+  border: var(--gutter) solid transparent;
+  border-radius: 0 6px 6px 0;
+  background:
+    linear-gradient(180deg, var(--water-top), var(--water-bottom)) padding-box,
+    repeating-conic-gradient(var(--tile) 0 25%, var(--tile-light) 0 50%) 0 0 / 8px 8px border-box;
+}
+
+.pennants {
+  position: absolute;
+  top: var(--gutter);
+  bottom: var(--gutter);
+  left: calc(var(--deck-col) + var(--gutter) + 12px);
+  z-index: 2;
+  width: 24px;
+  height: calc(100% - 2 * var(--gutter));
 }
 
 .rope {
+  position: relative;
+  z-index: 1;
+  grid-column: 2;
   display: block;
   width: 100%;
   height: 14px;
 }
 
-.laneBody {
-  position: relative;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 20px;
-  min-height: 104px;
-  padding: 18px 8px;
+.laneRow {
+  display: contents;
 }
 
-/* Línea del fondo del carril, terminada en T */
-.laneBody::before,
-.laneBody::after {
+.block {
+  grid-column: 1;
+  align-self: center;
+  justify-self: end;
+  width: calc(var(--deck-col) - 8px);
+  height: auto;
+  margin-right: -4px;
+}
+
+.lane {
+  position: relative;
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  min-height: 104px;
+  padding: 16px 20px 16px 56px;
+}
+
+/* Línea del fondo del carril terminada en T */
+.lane::before,
+.lane::after {
   content: '';
   position: absolute;
-  background: rgba(13, 59, 130, 0.35);
+  background: rgba(19, 36, 92, 0.18);
 }
 
-.laneBody::before {
-  left: 8%;
-  right: 6%;
+.lane::before {
+  left: 6%;
+  right: 5%;
   top: 50%;
-  height: 10px;
-  margin-top: -5px;
+  height: 8px;
+  margin-top: -4px;
 }
 
-.laneBody::after {
-  right: 6%;
+.lane::after {
+  right: 5%;
   top: 50%;
-  width: 10px;
-  height: 46px;
-  margin-top: -23px;
+  width: 8px;
+  height: 40px;
+  margin-top: -20px;
 }
 
-.laneNum,
-.laneBody > div,
-.time {
+.swimmer {
   position: relative;
-}
-
-.laneNum {
-  font-family: var(--condensed);
-  font-weight: 700;
-  font-size: 2.6rem;
-  line-height: 1;
-  min-width: 1.2ch;
-  color: rgba(255, 255, 255, 0.55);
+  z-index: 3;
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 20px;
 }
 
 .laneTitle {
-  font-family: var(--condensed);
-  font-weight: 700;
-  font-size: clamp(1.25rem, 3vw, 1.6rem);
+  font-weight: 800;
+  font-size: clamp(1.15rem, 2.6vw, 1.5rem);
+  line-height: 1.1;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
 }
 
 .laneDetail {
-  margin-top: 2px;
-  font-size: 0.92rem;
-  color: rgba(255, 255, 255, 0.92);
+  margin-top: 4px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: color-mix(in srgb, var(--navy) 82%, transparent);
 }
 
 .time {
-  padding: 4px 10px;
-  font-family: var(--digits);
-  font-size: clamp(0.95rem, 2.5vw, 1.25rem);
-  color: var(--led);
-  background: rgba(11, 13, 16, 0.85);
+  padding: 4px 12px 4px 10px;
+  font-weight: 800;
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--navy);
+  background: #ffffff;
+  border-left: 4px solid var(--red);
   border-radius: 4px;
 }
 
-.time:empty {
-  display: none;
+.bubbles {
+  position: absolute;
+  left: 40px;
+  top: 50%;
+  z-index: 2;
+  display: flex;
+  gap: 5px;
+  translate: 0 -50%;
 }
 
-@media (max-width: 480px) {
-  .laneBody {
-    grid-template-columns: auto 1fr;
+.bubbles span {
+  width: 7px;
+  height: 7px;
+  border: 1.5px solid rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.bubbles span:nth-child(even) {
+  width: 5px;
+  height: 5px;
+  translate: 0 -6px;
+}
+
+@media (max-width: 560px) {
+  .lane {
+    padding: 14px 12px 14px 48px;
   }
 
-  .time {
-    grid-column: 2;
-    justify-self: start;
+  .swimmer {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

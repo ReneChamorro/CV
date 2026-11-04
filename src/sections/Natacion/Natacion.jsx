@@ -1,6 +1,5 @@
-import '@fontsource/barlow-condensed/500.css'
-import '@fontsource/barlow-condensed/700.css'
-import '@fontsource/share-tech-mono'
+import '@fontsource/barlow/600.css'
+import '@fontsource/barlow/800.css'
 import { useId, useRef } from 'react'
 import { useGSAP } from '../../lib/gsap'
 import { getSection } from '../../sections'
@@ -12,19 +11,58 @@ import BackHome from '../../components/BackHome'
 import styles from './Natacion.module.css'
 
 const section = getSection('natacion')
+const svgId = (id) => id.replace(/[^a-zA-Z0-9]/g, '')
 
-// Carrilera: boyas alternadas, como el trazo escalonado del boceto.
+// Carrilera roja y blanca por tramos, como las del club.
 function Rope() {
-  const id = `rope${useId().replace(/[^a-zA-Z0-9]/g, '')}`
+  const id = `rope${svgId(useId())}`
   return (
     <svg className={styles.rope} data-rope aria-hidden="true">
       <defs>
-        <pattern id={id} width="34" height="14" patternUnits="userSpaceOnUse">
-          <circle cx="8.5" cy="7" r="6" fill="#f5fbff" />
-          <circle cx="25.5" cy="7" r="6" fill="#0d3b82" />
+        <pattern id={id} width="96" height="14" patternUnits="userSpaceOnUse">
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <g key={i}>
+              <circle cx={8 + i * 16} cy="7" r="6.5" fill={i < 3 ? '#e2232a' : '#ffffff'} />
+              <circle cx={6 + i * 16} cy="5" r="1.8" fill="#ffffff" opacity={i < 3 ? 0.45 : 0} />
+            </g>
+          ))}
         </pattern>
       </defs>
       <rect width="100%" height="14" fill={`url(#${id})`} />
+    </svg>
+  )
+}
+
+// Taco de salida visto desde arriba, con el número del carril y las asas de espalda.
+function StartBlock({ lane }) {
+  return (
+    <svg className={styles.block} viewBox="0 0 64 64" aria-hidden="true">
+      <rect x="6" y="8" width="44" height="48" rx="5" fill="#13245c" opacity="0.12" transform="translate(2 3)" />
+      <rect x="6" y="8" width="44" height="48" rx="5" fill="#ffffff" stroke="#c7d1de" />
+      <path d="M12 18 H44 M12 24 H44 M12 30 H44" stroke="#dde4ee" strokeWidth="2" />
+      <rect x="50" y="14" width="8" height="5" rx="2.5" fill="#9aa8bb" />
+      <rect x="50" y="45" width="8" height="5" rx="2.5" fill="#9aa8bb" />
+      <text x="28" y="49" textAnchor="middle" fontSize="15" fontWeight="800" fill="#13245c">
+        {lane}
+      </text>
+    </svg>
+  )
+}
+
+// Banderines de espalda que cruzan la piscina.
+function Pennants() {
+  const id = `flags${svgId(useId())}`
+  return (
+    <svg className={styles.pennants} aria-hidden="true">
+      <defs>
+        <pattern id={id} width="24" height="78" patternUnits="userSpaceOnUse">
+          <path d="M2 2 L20 8 L2 14 Z" fill="#e2232a" />
+          <path d="M2 28 L20 34 L2 40 Z" fill="#1f4fa8" />
+          <path d="M2 54 L20 60 L2 66 Z" fill="#ffffff" stroke="#c7d1de" />
+        </pattern>
+      </defs>
+      <line x1="2" x2="2" y1="0" y2="100%" stroke="#13245c" strokeWidth="1.2" opacity="0.6" />
+      <rect width="100%" height="100%" fill={`url(#${id})`} />
     </svg>
   )
 }
@@ -34,44 +72,58 @@ export default function Natacion() {
   useGSAP(() => waveTransition(scope.current), { scope })
 
   return (
-    <Page title="Natación" className={styles.pool}>
+    <Page title="Natación" className={styles.page}>
       <div ref={scope}>
-        <div className={styles.flood} data-flood aria-hidden="true">
-          <svg className={styles.crest} viewBox="0 0 80 1000" preserveAspectRatio="none">
-            <path data-crest d={CREST_A} />
-          </svg>
+        <div className={styles.waveTrack} aria-hidden="true">
+          <div className={styles.waveAxis}>
+            <div className={styles.band} data-band>
+              <svg className={styles.crestLead} viewBox="0 0 80 1000" preserveAspectRatio="none">
+                <path data-crest d={CREST_A} />
+              </svg>
+              <svg className={styles.crestTrail} viewBox="0 0 80 1000" preserveAspectRatio="none">
+                <path data-crest d={CREST_A} />
+              </svg>
+            </div>
+          </div>
         </div>
         <IntroLine d={section.line} color={section.color} />
         <BackHome className={styles.back} />
 
-        <div className={styles.inner}>
-          <header className={styles.board} data-board>
-            <div>
-              <p className={styles.boardLabel}>{data.disciplina} · federado</p>
-              <h1 className={styles.boardName}>{data.nombre}</h1>
-            </div>
-            <p className={styles.boardYear}>
-              <span className={styles.boardLabel}>desde</span>
-              <span data-year={data.desde}>{data.desde}</span>
-            </p>
+        <div className={styles.scene} data-pool-scene>
+          <header className={styles.head}>
+            <p className={styles.kicker}>{data.nombre}</p>
+            <h1 className={styles.title}>{data.disciplina}</h1>
+            <p className={styles.since}>Nadador federado desde {data.desde}</p>
+            <svg className={styles.squiggle} viewBox="0 0 120 12" aria-hidden="true">
+              <path d="M2 6 C12 0 22 0 32 6 S52 12 62 6 S82 0 92 6 S112 12 118 6" />
+            </svg>
           </header>
 
-          <ol className={styles.lanes}>
+          <div className={styles.poolDeck}>
+            <div className={styles.water} aria-hidden="true" />
+            <Pennants />
+            <Rope />
             {data.carriles.map((carril, i) => (
-              <li key={carril.titulo} className={styles.lane}>
-                <Rope />
-                <div className={styles.laneBody} data-lane>
-                  <span className={styles.laneNum}>{i + 1}</span>
-                  <div>
-                    <h2 className={styles.laneTitle}>{carril.titulo}</h2>
-                    <p className={styles.laneDetail}>{carril.detalle}</p>
+              <div key={carril.titulo} className={styles.laneRow}>
+                <StartBlock lane={i + 1} />
+                <div className={styles.lane}>
+                  <span className={styles.bubbles} aria-hidden="true">
+                    {[0, 1, 2, 3].map((b) => (
+                      <span key={b} data-bubble={i} />
+                    ))}
+                  </span>
+                  <div className={styles.swimmer} data-swimmer>
+                    <div>
+                      <h2 className={styles.laneTitle}>{carril.titulo}</h2>
+                      <p className={styles.laneDetail}>{carril.detalle}</p>
+                    </div>
+                    {carril.marca && <span className={styles.time}>{carril.marca}</span>}
                   </div>
-                  <span className={styles.time}>{carril.marca}</span>
                 </div>
-              </li>
+                <Rope />
+              </div>
             ))}
-          </ol>
-          <Rope />
+          </div>
         </div>
       </div>
     </Page>
