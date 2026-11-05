@@ -3,10 +3,11 @@ export default {
   instrumento: 'Viola',
   resumen:
     'Formación musical en viola en el Conservatorio del Colegio Emil Friedman. Integrante de diversas orquestas juveniles con roles de liderazgo.',
-  // Inicio de la partitura que se dibuja en la transición. Cambia "obra" y "compases" cuando elijas la pieza.
+  // Una obra escrita como lista de notas (se convierte sola a partitura y entra al sorteo con las de "incipits").
   // pos: medios espacios desde la línea central (Do4 en clave de Do en 3ª línea); + sube, − baja.
   // dur: 'w' redonda, 'h' blanca, 'q' negra, 'e' corchea,
-  // 's' semicorchea, 't' fusa, 'x' semifusa.
+  // 's' semicorchea, 't' fusa, 'x' semifusa; agrega '.' para puntillo ('q.'). { rest: true, dur: 'q' } es un silencio.
+  // Las corcheas y semicorcheas de un mismo pulso se unen con viga automáticamente.
   incipit: {
     obra: 'Obra por definir',
     compas: [4, 4],
@@ -45,15 +46,6 @@ export default {
   //   | barra de compás, |] doble barra final. K: armadura (K:G = un sostenido) y clef=alto para la viola.
   // porTranscribir: true = todavía no sale en la página.
   incipits: [
-    {
-      compositor: 'Ejercicio',
-      obra: 'Frase de prueba',
-      abc: `X:1
-M:4/4
-L:1/16
-K:C clef=alto
-G,2B,2 D2 G4 FE DEFG | F2E2 D4 A,8 |]`,
-    },
     {
       compositor: 'G. P. Telemann',
       obra: 'Concierto para viola',

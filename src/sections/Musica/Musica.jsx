@@ -5,7 +5,7 @@ import '@fontsource/cormorant-garamond/600-italic.css'
 import '@fontsource/cormorant-garamond/700.css'
 import '@fontsource/eb-garamond/400.css'
 import '@fontsource/eb-garamond/400-italic.css'
-import { useRef, useState } from 'react'
+import { useMemo, useRef } from 'react'
 import { useGSAP } from '../../lib/gsap'
 import { getSection } from '../../sections'
 import { staffTransition } from '../../transitions/staffTransition'
@@ -14,7 +14,7 @@ import Page from '../../components/Page'
 import IntroLine from '../../components/IntroLine'
 import BackHome from '../../components/BackHome'
 import { NoteGlyph } from './Staff'
-import Score, { pickIncipit } from './Score'
+import Score, { pickIncipit, compasesToAbc } from './Score'
 import styles from './Musica.module.css'
 
 const section = getSection('musica')
@@ -31,7 +31,11 @@ function Video({ video }) {
 
 export default function Musica() {
   const scope = useRef()
-  const [incipit] = useState(() => pickIncipit(data.incipits))
+  // Se recalcula cuando cambia el archivo de contenido, así lo que edites se ve al guardar.
+  const incipit = useMemo(
+    () => pickIncipit([{ obra: data.incipit.obra, abc: compasesToAbc(data.incipit) }, ...data.incipits]),
+    [data],
+  )
   useGSAP(() => staffTransition(scope.current), { scope })
 
   return (
@@ -43,7 +47,7 @@ export default function Musica() {
         <section className={styles.hero}>
           <Score incipit={incipit} className={styles.staff} />
           <p className={styles.caption} data-music-reveal>
-            Incipit · {incipit.compositor}, {incipit.obra}
+            Incipit · {[incipit.compositor, incipit.obra].filter(Boolean).join(', ')}
           </p>
           <h1 className={styles.name} data-music-reveal>
             {data.nombre}

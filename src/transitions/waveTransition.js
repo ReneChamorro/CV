@@ -8,6 +8,9 @@ const SURFACE_FULL =
   'M0,150 C150,110 250,110 400,150 C550,190 650,190 800,150 C880,130 950,125 1000,140 L1000,300 L0,300 Z'
 const SURFACE_DRAIN =
   'M0,260 C150,250 250,220 400,200 C550,180 650,120 800,90 C880,75 950,60 1000,50 L1000,300 L0,300 Z'
+// Solo la curva de arriba, para el borde blanco (el lado de abajo no lleva borde).
+const rim = (surface) => surface.replace(' L1000,300 L0,300 Z', '')
+export const RIM_RISE = rim(SURFACE_RISE)
 
 // Burbujas con semilla fija: el mismo dibujo en cada visita (viewBox 0 0 1000 1000).
 function seeded(seed) {
@@ -38,27 +41,30 @@ export function waveTransition(root) {
     .set(swimmers, { autoAlpha: 0, x: () => -0.3 * window.innerWidth })
     .set(q('[data-water]'), { yPercent: 130 })
     .set(q('[data-flood-bubble]'), { autoAlpha: 0, scale: 0.6, transformOrigin: '50% 50%' })
-    .to(q('[data-water]'), { yPercent: 0, duration: 0.8, ease: 'power2.inOut' }, 0)
-    .to(q('[data-surface]'), { morphSVG: SURFACE_FULL, duration: 0.8, ease: 'sine.inOut' }, 0)
-    .to(q('[data-intro-line]'), { autoAlpha: 0, duration: 0.2 }, 0.3)
-    // Con la pantalla cubierta aparece la piscina debajo.
-    .set(q('[data-pool-scene]'), { autoAlpha: 1 }, 0.85)
-    .to(q('[data-flood-bubble]'), { autoAlpha: 1, scale: 1, duration: 0.25, stagger: { each: 0.008, from: 'random' } }, 0.7)
-    .to(q('[data-water]'), { yPercent: 130, duration: 0.9, ease: 'power2.inOut' }, 1)
-    .to(q('[data-surface]'), { morphSVG: SURFACE_DRAIN, duration: 0.9, ease: 'sine.inOut' }, 1)
-    .to(q('[data-flood-bubble]'), { y: -90, duration: 1.1, ease: 'power1.out' }, 1)
-    // Revientan de arriba hacia abajo, a medida que la superficie baja y las alcanza.
+    .to(q('[data-water]'), { yPercent: 0, duration: 1.4, ease: 'power2.inOut' }, 0)
+    .to(q('[data-surface]'), { morphSVG: SURFACE_FULL, duration: 1.4, ease: 'sine.inOut' }, 0)
+    .to(q('[data-rim]'), { morphSVG: rim(SURFACE_FULL), duration: 1.4, ease: 'sine.inOut' }, 0)
+    // La línea se esconde cuando el agua la alcanza, para no ver dos olas a la vez.
+    .to(q('[data-intro-line]'), { autoAlpha: 0, duration: 0.25 }, 0.75)
+    .to(q('[data-flood-bubble]'), { autoAlpha: 1, scale: 1, duration: 0.35, stagger: { each: 0.012, from: 'random' } }, 1.1)
+    // Con la pantalla cubierta aparece la piscina debajo; el agua se queda un momento.
+    .set(q('[data-pool-scene]'), { autoAlpha: 1 }, 1.5)
+    .to(q('[data-water]'), { yPercent: 130, duration: 1.5, ease: 'power2.inOut' }, 1.8)
+    .to(q('[data-surface]'), { morphSVG: SURFACE_DRAIN, duration: 1.5, ease: 'sine.inOut' }, 1.8)
+    .to(q('[data-rim]'), { morphSVG: rim(SURFACE_DRAIN), duration: 1.5, ease: 'sine.inOut' }, 1.8)
+    .to(q('[data-flood-bubble]'), { y: -120, duration: 1.8, ease: 'power1.out' }, 1.8)
+    // Revientan hacia fuera, de arriba hacia abajo, a medida que la superficie baja y las alcanza.
     .to(
       q('[data-flood-bubble]'),
       {
-        keyframes: [{ scale: 1.15, duration: 0.08 }, { scale: 0.2, autoAlpha: 0, duration: 0.14 }],
-        delay: (i, el) => ((Number(el.dataset.cy) - 300) / 700) * 0.75,
+        keyframes: [{ scale: 1.12, duration: 0.1 }, { scale: 1.35, autoAlpha: 0, duration: 0.16 }],
+        delay: (i, el) => ((Number(el.dataset.cy) - 300) / 700) * 1.2,
       },
-      1.05,
+      1.95,
     )
 
   ropes.forEach((rope, i) => {
-    tl.to(rope, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.45, ease: 'power2.inOut' }, i === 0 ? 1.7 : '>-0.1')
+    tl.to(rope, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.45, ease: 'power2.inOut' }, i === 0 ? 2.9 : '>-0.1')
 
     const swimmer = swimmers[i]
     if (!swimmer) return

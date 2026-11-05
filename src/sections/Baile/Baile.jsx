@@ -5,11 +5,13 @@ import { getSection } from '../../sections'
 import Page from '../../components/Page'
 import IntroLine from '../../components/IntroLine'
 import BackHome from '../../components/BackHome'
+import Pieces from './Pieces'
 import styles from './Baile.module.css'
 
 const section = getSection('baile')
 
-// Borrador: escenario a oscuras, el círculo punteado del boceto como marca en el piso y un foco que sigue el cursor.
+// Escenario a oscuras: el círculo punteado del boceto como marca en el piso y un foco que sigue el cursor.
+// Debajo, las piezas: cada una en su círculo y el foco viajando a la que está en el centro.
 export default function Baile() {
   const scope = useRef()
   const follow = useRef()
@@ -57,10 +59,11 @@ export default function Baile() {
               Baile
             </h1>
             <p className={styles.soon} data-baile-reveal>
-              Próximamente: videos y coreografías
+              Piezas y coreografías
             </p>
           </div>
         </div>
+        <Pieces />
       </div>
     </Page>
   )

@@ -3,7 +3,7 @@ import '@fontsource/barlow/800.css'
 import { useId, useRef } from 'react'
 import { useGSAP } from '../../lib/gsap'
 import { getSection } from '../../sections'
-import { waveTransition, SURFACE_RISE, BUBBLES } from '../../transitions/waveTransition'
+import { waveTransition, SURFACE_RISE, RIM_RISE, BUBBLES } from '../../transitions/waveTransition'
 import data from '../../content/natacion'
 import Page from '../../components/Page'
 import IntroLine from '../../components/IntroLine'
@@ -75,9 +75,10 @@ export default function Natacion() {
     <Page title="Natación" className={styles.page}>
       <div ref={scope}>
         <div className={styles.flood} aria-hidden="true">
-          <div className={styles.water} data-water>
+          <div className={styles.floodWater} data-water>
             <svg className={styles.surface} viewBox="0 0 1000 300" preserveAspectRatio="none">
-              <path data-surface d={SURFACE_RISE} vectorEffect="non-scaling-stroke" />
+              <path data-surface d={SURFACE_RISE} />
+              <path data-rim className={styles.rim} d={RIM_RISE} vectorEffect="non-scaling-stroke" />
             </svg>
           </div>
           <svg className={styles.floodBubbles} viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">

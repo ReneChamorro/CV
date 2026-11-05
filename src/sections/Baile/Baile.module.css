@@ -1,5 +1,11 @@
 .page {
   --pink: #e98ab3;
+  --night: #120d12;
+  --paper: #fbeef4;
+
+  min-height: 100svh;
+  background: var(--night);
+  color: var(--paper);
 }
 
 .stage {
@@ -65,4 +71,226 @@
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--pink);
+}
+
+/* Las piezas: escenario largo con un foco que viaja al círculo activo */
+.pieces {
+  position: relative;
+  display: grid;
+  gap: clamp(48px, 10vh, 120px);
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 12vh 16px 20vh;
+  overflow: clip;
+}
+
+.pieceSpot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 900px;
+  height: 900px;
+  margin: -450px 0 0 -450px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 214, 232, 0.2), rgba(255, 214, 232, 0.06) 35%, transparent 62%);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.piece {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(24px, 6vw, 80px);
+  min-height: 70svh;
+  opacity: 0.35;
+  transition: opacity 500ms ease;
+}
+
+.piece[data-active] {
+  opacity: 1;
+}
+
+.piece:nth-child(odd of .piece) .circle {
+  order: 2;
+}
+
+.circle {
+  position: relative;
+  justify-self: center;
+  width: min(100%, 420px);
+  aspect-ratio: 1;
+  padding: 0;
+  color: var(--paper);
+  background: radial-gradient(circle at 50% 40%, #2a1c27, #160f15 70%) center / cover;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 220ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.circle:active {
+  transform: scale(0.97);
+}
+
+.circle:focus-visible {
+  outline: 2px solid var(--pink);
+  outline-offset: 10px;
+}
+
+.circleRing {
+  position: absolute;
+  inset: -14px;
+  width: calc(100% + 28px);
+  height: calc(100% + 28px);
+  overflow: visible;
+}
+
+.circleRing circle {
+  fill: none;
+  stroke: var(--pink);
+  stroke-width: 1.2;
+  stroke-dasharray: 10 7 2 7;
+  stroke-linecap: round;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .piece[data-active] .circleRing circle {
+    animation: ring-spin 40s linear infinite;
+  }
+}
+
+@keyframes ring-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.circleLabel {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 1.3rem;
+  color: var(--pink);
+}
+
+.pieceTitle {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  line-height: 1.1;
+}
+
+.ficha {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 24px;
+  margin: 20px 0 0;
+}
+
+.ficha dt {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pink);
+}
+
+.ficha dd {
+  margin: 2px 0 0;
+  font-size: 1rem;
+}
+
+.donde {
+  margin-top: 18px;
+  font-style: italic;
+  color: color-mix(in srgb, var(--paper) 80%, transparent);
+}
+
+/* Pieza abierta: el círculo crece hasta llenar la pantalla */
+.modal {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  color: var(--paper);
+  background: #0b080b;
+  border: 0;
+}
+
+.modal::backdrop {
+  background: transparent;
+}
+
+.modalBody {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 32px;
+  height: 100%;
+  padding: 72px clamp(16px, 4vw, 56px) 32px;
+}
+
+.player {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border: 0;
+}
+
+.noVideo {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 1.4rem;
+  color: var(--pink);
+  border: 1.4px dashed var(--pink);
+  border-radius: 8px;
+}
+
+.close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  min-height: 44px;
+  padding: 0 18px;
+  font: inherit;
+  color: var(--night);
+  background: var(--pink);
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.close:active {
+  transform: scale(0.97);
+}
+
+@media (max-width: 760px) {
+  .piece {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .piece:nth-child(odd of .piece) .circle {
+    order: 0;
+  }
+
+  .circle {
+    width: min(78vw, 360px);
+  }
+
+  .modalBody {
+    grid-template-columns: 1fr;
+    align-content: start;
+    overflow-y: auto;
+  }
 }

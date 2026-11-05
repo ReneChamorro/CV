@@ -16,30 +16,41 @@ export const canHover = () => window.matchMedia('(hover: hover) and (pointer: fi
 const SEEN_KEY = 'intro-seen'
 const SKIP_EVENTS = ['pointerdown', 'keydown', 'wheel', 'touchstart']
 
-function seenBefore(id) {
+function readSeen() {
   try {
-    const seen = JSON.parse(sessionStorage.getItem(SEEN_KEY) || '[]')
-    if (seen.includes(id)) return true
-    sessionStorage.setItem(SEEN_KEY, JSON.stringify([...seen, id]))
+    return JSON.parse(sessionStorage.getItem(SEEN_KEY) || '[]')
   } catch {
     // Sin storage (modo privado): la intro se ve completa cada vez.
+    return []
   }
-  return false
+}
+
+function markSeen(id) {
+  try {
+    const seen = readSeen()
+    if (!seen.includes(id)) sessionStorage.setItem(SEEN_KEY, JSON.stringify([...seen, id]))
+  } catch {
+    // Igual que arriba.
+  }
 }
 
 // Reproduce la intro de una sección: completa la primera vez, más rápida al volver,
 // acelerada si el usuario hace clic, tecla o scroll, e instantánea con movimiento reducido.
+// Solo cuenta como vista cuando termina: en desarrollo React monta dos veces y la segunda no debe ir rápida.
 export function playIntro(tl, id) {
   if (prefersReducedMotion()) {
     tl.progress(1)
     return
   }
-  if (seenBefore(id)) tl.timeScale(2)
+  if (readSeen().includes(id)) tl.timeScale(2)
 
   const fastForward = () => tl.timeScale(6)
   const stop = () => SKIP_EVENTS.forEach((e) => window.removeEventListener(e, fastForward))
   SKIP_EVENTS.forEach((e) => window.addEventListener(e, fastForward, { passive: true }))
-  tl.eventCallback('onComplete', stop)
+  tl.eventCallback('onComplete', () => {
+    stop()
+    markSeen(id)
+  })
   return stop
 }
 
