@@ -13,11 +13,14 @@ import data from '../../content/musica'
 import Page from '../../components/Page'
 import IntroLine from '../../components/IntroLine'
 import BackHome from '../../components/BackHome'
+import Portal from '../../components/Portal'
 import { NoteGlyph } from './Staff'
 import Score, { pickIncipit, compasesToAbc } from './Score'
 import styles from './Musica.module.css'
 
 const section = getSection('musica')
+// Secreto bajo el tempo de cada movimiento: la línea de otro ámbito que lleva a él.
+const MOVEMENT_PORTALS = ['natacion', 'baile', 'skate']
 
 function Video({ video }) {
   if (!video) return <div className={styles.videoEmpty}>Video por agregar</div>
@@ -61,14 +64,17 @@ export default function Musica() {
         </section>
 
         <ol className={styles.movements}>
-          {data.movimientos.map((mov) => (
+          {data.movimientos.map((mov, i) => (
             <li key={mov.numero} className={styles.movement}>
               <header className={styles.movHeader}>
                 <NoteGlyph tipo={mov.nota} className={styles.glyph} />
                 <h2 className={styles.movTitle}>
                   <span className={styles.numeral}>{mov.numero}.</span> {mov.titulo}
                 </h2>
-                <span className={styles.tempo}>{mov.tempo}</span>
+                <span className={styles.tempoCol}>
+                  <span className={styles.tempo}>{mov.tempo}</span>
+                  {MOVEMENT_PORTALS[i] && <Portal to={MOVEMENT_PORTALS[i]} style={{ top: '100%', right: '-14px' }} />}
+                </span>
               </header>
               <p className={styles.movText}>{mov.texto}</p>
               {mov.videos && (

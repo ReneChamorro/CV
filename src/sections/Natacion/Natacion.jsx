@@ -3,11 +3,12 @@ import '@fontsource/barlow/800.css'
 import { useId, useRef } from 'react'
 import { useGSAP } from '../../lib/gsap'
 import { getSection } from '../../sections'
-import { waveTransition, SURFACE_RISE, RIM_RISE, BUBBLES } from '../../transitions/waveTransition'
+import { waveTransition } from '../../transitions/waveTransition'
 import data from '../../content/natacion'
 import Page from '../../components/Page'
 import IntroLine from '../../components/IntroLine'
 import BackHome from '../../components/BackHome'
+import Portal from '../../components/Portal'
 import styles from './Natacion.module.css'
 
 const section = getSection('natacion')
@@ -49,23 +50,6 @@ function StartBlock({ lane }) {
   )
 }
 
-// Banderines de espalda que cruzan la piscina.
-function Pennants() {
-  const id = `flags${svgId(useId())}`
-  return (
-    <svg className={styles.pennants} aria-hidden="true">
-      <defs>
-        <pattern id={id} width="24" height="78" patternUnits="userSpaceOnUse">
-          <path d="M2 2 L20 8 L2 14 Z" fill="#e2232a" />
-          <path d="M2 28 L20 34 L2 40 Z" fill="#1f4fa8" />
-          <path d="M2 54 L20 60 L2 66 Z" fill="#ffffff" stroke="#c7d1de" />
-        </pattern>
-      </defs>
-      <line x1="2" x2="2" y1="0" y2="100%" stroke="#13245c" strokeWidth="1.2" opacity="0.6" />
-      <rect width="100%" height="100%" fill={`url(#${id})`} />
-    </svg>
-  )
-}
 
 export default function Natacion() {
   const scope = useRef()
@@ -74,22 +58,11 @@ export default function Natacion() {
   return (
     <Page title="Natación" className={styles.page}>
       <div ref={scope}>
-        <div className={styles.flood} aria-hidden="true">
-          <div className={styles.floodWater} data-water>
-            <svg className={styles.surface} viewBox="0 0 1000 300" preserveAspectRatio="none">
-              <path data-surface d={SURFACE_RISE} />
-              <path data-rim className={styles.rim} d={RIM_RISE} vectorEffect="non-scaling-stroke" />
-            </svg>
-          </div>
-          <svg className={styles.floodBubbles} viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
-            {BUBBLES.map(({ cx, cy, r }, i) => (
-              <g key={i} data-flood-bubble data-cy={cy}>
-                <circle cx={cx} cy={cy} r={r} />
-                <circle cx={cx - r * 0.35} cy={cy - r * 0.35} r={r * 0.22} className={styles.shine} />
-              </g>
-            ))}
-          </svg>
-        </div>
+        <svg className={styles.split} data-split aria-hidden="true">
+          {[...data.carriles, null].map((_, i) => (
+            <line key={i} data-split-line x1="0" x2="0" y1="0" y2="0" />
+          ))}
+        </svg>
         <IntroLine d={section.line} color={section.color} />
         <BackHome className={styles.back} />
 
@@ -104,18 +77,16 @@ export default function Natacion() {
           </header>
 
           <div className={styles.poolDeck}>
-            <div className={styles.water} aria-hidden="true" />
-            <Pennants />
+            {/* Secretos: líneas de otros ámbitos escondidas entre los carriles */}
+            <Portal to="musica" style={{ right: '20%', top: '46%' }} />
+            <Portal to="baile" style={{ right: '8%', top: '74%' }} />
+            <Portal to="skate" style={{ left: '30%', bottom: '2%' }} />
+            <div className={styles.water} data-pool-water aria-hidden="true" />
             <Rope />
             {data.carriles.map((carril, i) => (
               <div key={carril.titulo} className={styles.laneRow}>
                 <StartBlock lane={i + 1} />
                 <div className={styles.lane}>
-                  <span className={styles.bubbles} aria-hidden="true">
-                    {[0, 1, 2, 3].map((b) => (
-                      <span key={b} data-bubble={i} />
-                    ))}
-                  </span>
                   <div className={styles.swimmer} data-swimmer>
                     <div>
                       <h2 className={styles.laneTitle}>{carril.titulo}</h2>

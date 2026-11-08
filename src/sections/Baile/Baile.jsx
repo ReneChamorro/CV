@@ -5,6 +5,7 @@ import { getSection } from '../../sections'
 import Page from '../../components/Page'
 import IntroLine from '../../components/IntroLine'
 import BackHome from '../../components/BackHome'
+import Portal from '../../components/Portal'
 import Pieces from './Pieces'
 import styles from './Baile.module.css'
 
@@ -63,7 +64,13 @@ export default function Baile() {
             </p>
           </div>
         </div>
-        <Pieces />
+        <div className={styles.piecesWrap}>
+          {/* Secretos: líneas de otros ámbitos escondidas entre las piezas */}
+          <Portal to="musica" dark style={{ right: '8%', top: '33%' }} />
+          <Portal to="natacion" dark style={{ left: '6%', top: '64%' }} />
+          <Portal to="sistemas" dark style={{ right: '12%', bottom: '6%' }} />
+          <Pieces />
+        </div>
       </div>
     </Page>
   )

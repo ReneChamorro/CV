@@ -1,86 +1,73 @@
 import { gsap, playIntro } from '../lib/gsap'
 
-// Superficie del agua (viewBox 0 0 1000 300, el agua queda debajo de la curva).
-// Sube inclinada desde la izquierda, se aplana al cubrir y baja inclinada hacia el otro lado.
-export const SURFACE_RISE =
-  'M0,40 C150,30 250,60 400,90 C550,120 650,150 800,200 C880,225 950,250 1000,280 L1000,300 L0,300 Z'
-const SURFACE_FULL =
-  'M0,150 C150,110 250,110 400,150 C550,190 650,190 800,150 C880,130 950,125 1000,140 L1000,300 L0,300 Z'
-const SURFACE_DRAIN =
-  'M0,260 C150,250 250,220 400,200 C550,180 650,120 800,90 C880,75 950,60 1000,50 L1000,300 L0,300 Z'
-// Solo la curva de arriba, para el borde blanco (el lado de abajo no lleva borde).
-const rim = (surface) => surface.replace(' L1000,300 L0,300 Z', '')
-export const RIM_RISE = rim(SURFACE_RISE)
+// La misma ola de la portada (viewBox 0 0 1000 200) con amplitud variable: así se calma de a poco.
+const wave = (a) =>
+  `M0,100 C83,${100 - a} 167,${100 - a} 250,100 C333,${100 + a} 417,${100 + a} 500,100 C583,${100 - a} 667,${100 - a} 750,100 C833,${100 + a} 917,${100 + a} 1000,100`
 
-// Burbujas con semilla fija: el mismo dibujo en cada visita (viewBox 0 0 1000 1000).
-function seeded(seed) {
-  return () => {
-    seed = (seed + 0x6d2b79f5) | 0
-    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed)
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-  }
-}
-const rand = seeded(2013)
-export const BUBBLES = Array.from({ length: 38 }, () => ({
-  cx: Math.round(rand() * 1000),
-  cy: Math.round(300 + rand() * 680),
-  r: Math.round(5 + rand() ** 2 * 26),
-}))
-
-// El agua sube y tapa el cambio; al bajar suelta burbujas que revientan y deja la piscina.
-// Luego, carril por carril: se tiende la carrilera y el texto "nada" desde el taco.
+// Como en Música: la ola se aquieta, se abre en las carrileras y el agua se llena entre ellas.
+// Luego el texto de cada carril entra nadando desde su taco.
 export function waveTransition(root) {
   const q = gsap.utils.selector(root)
   const ropes = q('[data-rope]')
+  const lines = q('[data-split-line]')
   const swimmers = q('[data-swimmer]')
-  const tl = gsap.timeline()
+  const line = q('[data-intro-line] path')
+  const w = window.innerWidth
+  const h = window.innerHeight
+  // Las líneas parten de donde está la línea de la portada (10vw a 90vw, al centro).
+  const from = { x1: w * 0.1, x2: w * 0.9, y1: h / 2, y2: h / 2 }
+  const target = (i) => {
+    const r = ropes[i].getBoundingClientRect()
+    const y = r.top + r.height / 2
+    return { x1: r.left, x2: r.right, y1: y, y2: y }
+  }
+  const tl = gsap.timeline({ defaults: { ease: 'power2.inOut' } })
 
   tl.set(q('[data-pool-scene]'), { autoAlpha: 0 })
-    .set(ropes, { clipPath: 'inset(0% 100% 0% 0%)' })
-    .set(swimmers, { autoAlpha: 0, x: () => -0.3 * window.innerWidth })
-    .set(q('[data-water]'), { yPercent: 130 })
-    .set(q('[data-flood-bubble]'), { autoAlpha: 0, scale: 0.6, transformOrigin: '50% 50%' })
-    .to(q('[data-water]'), { yPercent: 0, duration: 1.4, ease: 'power2.inOut' }, 0)
-    .to(q('[data-surface]'), { morphSVG: SURFACE_FULL, duration: 1.4, ease: 'sine.inOut' }, 0)
-    .to(q('[data-rim]'), { morphSVG: rim(SURFACE_FULL), duration: 1.4, ease: 'sine.inOut' }, 0)
-    // La línea se esconde cuando el agua la alcanza, para no ver dos olas a la vez.
-    .to(q('[data-intro-line]'), { autoAlpha: 0, duration: 0.25 }, 0.75)
-    .to(q('[data-flood-bubble]'), { autoAlpha: 1, scale: 1, duration: 0.35, stagger: { each: 0.012, from: 'random' } }, 1.1)
-    // Con la pantalla cubierta aparece la piscina debajo; el agua se queda un momento.
-    .set(q('[data-pool-scene]'), { autoAlpha: 1 }, 1.5)
-    .to(q('[data-water]'), { yPercent: 130, duration: 1.5, ease: 'power2.inOut' }, 1.8)
-    .to(q('[data-surface]'), { morphSVG: SURFACE_DRAIN, duration: 1.5, ease: 'sine.inOut' }, 1.8)
-    .to(q('[data-rim]'), { morphSVG: rim(SURFACE_DRAIN), duration: 1.5, ease: 'sine.inOut' }, 1.8)
-    .to(q('[data-flood-bubble]'), { y: -120, duration: 1.8, ease: 'power1.out' }, 1.8)
-    // Revientan hacia fuera, de arriba hacia abajo, a medida que la superficie baja y las alcanza.
+    .set(ropes, { autoAlpha: 0 })
+    .set(swimmers, { autoAlpha: 0, x: -0.25 * w })
+    // El agua crece desde arriba con transform (más fluido que recortarla con clip-path).
+    .set(q('[data-pool-water]'), { scaleY: 0, transformOrigin: '50% 0%' })
+    .set(lines, { attr: from })
+    // Anticipación: la línea baja un poco y la ola se va calmando hasta quedar recta.
+    .to(line, { y: 6, duration: 0.2, ease: 'power1.out' }, 0)
+    .to(line, { y: 0, duration: 0.5, ease: 'power2.out' }, 0.2)
     .to(
-      q('[data-flood-bubble]'),
+      line,
       {
-        keyframes: [{ scale: 1.12, duration: 0.1 }, { scale: 1.35, autoAlpha: 0, duration: 0.16 }],
-        delay: (i, el) => ((Number(el.dataset.cy) - 300) / 700) * 1.2,
+        keyframes: [
+          { morphSVG: wave(-16), duration: 0.35 },
+          { morphSVG: wave(8), duration: 0.3 },
+          { morphSVG: wave(0), duration: 0.3 },
+        ],
+        ease: 'sine.inOut',
       },
-      1.95,
+      0,
     )
-
-  ropes.forEach((rope, i) => {
-    tl.to(rope, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.45, ease: 'power2.inOut' }, i === 0 ? 2.9 : '>-0.1')
-
-    const swimmer = swimmers[i]
-    if (!swimmer) return
-    tl.to(swimmer, { autoAlpha: 1, x: 0, duration: 0.75, ease: 'power3.out' }, '>-0.1')
-      // Brazadas: un vaivén que se amortigua mientras el texto llega.
-      .to(
-        swimmer,
-        { keyframes: { y: [0, -5, 4, -3, 1.5, 0], rotation: [0, -1.2, 1, -0.6, 0.3, 0] }, duration: 0.75, ease: 'none' },
-        '<',
-      )
-      .to(
-        q(`[data-bubble="${i}"]`),
-        { keyframes: [{ autoAlpha: 0.9, y: -4, duration: 0.25 }, { autoAlpha: 0, y: -14, duration: 0.4 }], stagger: 0.06 },
-        '<0.15',
-      )
-  })
+    .to(q('[data-pool-scene]'), { autoAlpha: 1, duration: 0.5, ease: 'power2.out' }, 0.7)
+    // Relevo: la línea recta se vuelve las carrileras, que se abren desde el centro.
+    .set(q('[data-intro-line]'), { autoAlpha: 0 }, 1.05)
+    .set(q('[data-split]'), { autoAlpha: 1 }, 1.05)
+    .to(
+      lines,
+      {
+        attr: {
+          x1: (i) => target(i).x1,
+          x2: (i) => target(i).x2,
+          y1: (i) => target(i).y1,
+          y2: (i) => target(i).y2,
+        },
+        duration: 0.8,
+        ease: 'power3.out',
+        stagger: { each: 0.05, from: 'center' },
+      },
+      1.05,
+    )
+    .to(q('[data-pool-water]'), { scaleY: 1, duration: 0.9, ease: 'power3.out' }, 1.15)
+    .to(ropes, { autoAlpha: 1, duration: 0.3, stagger: { each: 0.04, from: 'center' } }, 1.85)
+    .to(q('[data-split]'), { autoAlpha: 0, duration: 0.3 }, 1.95)
+    .to(swimmers, { autoAlpha: 1, x: 0, duration: 0.7, ease: 'power3.out', stagger: 0.12 }, 1.7)
+    .to(swimmers, { keyframes: { y: [0, -4, 3, -2, 0] }, duration: 0.7, ease: 'none', stagger: 0.12 }, 1.7)
 
   return playIntro(tl, 'natacion')
 }

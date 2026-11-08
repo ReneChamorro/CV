@@ -7,8 +7,8 @@ export default function Page({ title, className, children }) {
   useEffect(() => {
     document.title = title ? `${title} · René Chamorro` : 'René Chamorro'
     window.scrollTo(0, 0)
-    // Al cambiar de ruta, el lector de pantalla empieza en el contenido nuevo.
-    main.current.focus({ preventScroll: true })
+    // Al cambiar de ruta, el lector de pantalla empieza en el contenido nuevo (salvo que haya un diálogo abierto).
+    if (!document.querySelector('[aria-modal="true"]')) main.current.focus({ preventScroll: true })
   }, [title])
 
   return (

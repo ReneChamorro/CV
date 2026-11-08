@@ -294,3 +294,7 @@
     overflow-y: auto;
   }
 }
+
+.piecesWrap {
+  position: relative;
+}

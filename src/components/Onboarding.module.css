@@ -1,0 +1,124 @@
+/* Velo liviano: la página se sigue viendo detrás */
+.veil {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  background: rgba(14, 13, 12, 0.38);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.panel {
+  width: min(460px, 100%);
+  color: #fbfaf7;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
+}
+
+.title {
+  font-weight: 500;
+  font-size: clamp(1.4rem, 4vw, 1.8rem);
+  letter-spacing: -0.02em;
+}
+
+.tips {
+  display: grid;
+  gap: 16px;
+  margin: 22px 0 28px;
+}
+
+.tips li {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 12px;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.num {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1.5px solid rgba(251, 250, 247, 0.7);
+  border-radius: 50%;
+  text-shadow: none;
+}
+
+.objects {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.object {
+  display: block;
+  width: 48px;
+  height: 26px;
+  padding: 4px 6px;
+  background: rgba(251, 250, 247, 0.92);
+  border-radius: 8px;
+}
+
+.object svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.object path {
+  stroke-width: 2;
+}
+
+.object line {
+  stroke-width: 1.2;
+}
+
+.start {
+  min-height: 44px;
+  padding: 0 26px;
+  font: inherit;
+  font-weight: 600;
+  color: #1a1a1a;
+  background: #fbfaf7;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  text-shadow: none;
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.start:active {
+  transform: scale(0.97);
+}
+
+.start:focus-visible {
+  outline: 2px solid #fbfaf7;
+  outline-offset: 3px;
+}
+
+/* "?" para volver a ver el tutorial, solo en la portada */
+.help {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 40;
+  width: 44px;
+  height: 44px;
+  font: inherit;
+  font-weight: 600;
+  color: #1a1a1a;
+  background: rgba(251, 250, 247, 0.9);
+  border: 1px solid rgba(26, 26, 26, 0.18);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.help:active {
+  transform: scale(0.95);
+}

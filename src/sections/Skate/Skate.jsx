@@ -7,6 +7,7 @@ import videos from '../../content/skate'
 import Page from '../../components/Page'
 import IntroLine from '../../components/IntroLine'
 import BackHome from '../../components/BackHome'
+import Portal from '../../components/Portal'
 import ClipCard, { loadInstagram } from './ClipCard'
 import styles from './Skate.module.css'
 
@@ -77,6 +78,10 @@ export default function Skate() {
         </section>
 
         <section className={styles.gallery} ref={gallery} aria-label="Videos de skate">
+          {/* Secretos: líneas de otros ámbitos escondidas entre las tarjetas */}
+          <Portal to="musica" style={{ left: '48%', top: '-34px', '--tilt': '-6deg' }} />
+          <Portal to="baile" style={{ right: '-6px', top: '58%', '--tilt': '8deg' }} />
+          <Portal to="natacion" style={{ left: '-6px', bottom: '-48px' }} />
           {videos.map((video, i) => (
             <ClipCard key={i} video={video} index={i} />
           ))}

@@ -18,65 +18,21 @@
   font-family: 'Barlow', 'Geist Variable', sans-serif;
 }
 
-/* Inundación: el agua sube con la superficie inclinada, cubre la pantalla y baja soltando burbujas */
-.flood {
+/* La línea de la portada abriéndose en carrileras durante la transición */
+.split {
   position: fixed;
   inset: 0;
   z-index: 30;
-  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  visibility: hidden;
   pointer-events: none;
 }
 
-.floodWater {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, #5ec0ef 0%, #2f86c8 45%, #1d4f8f 100%);
-}
-
-/* Rayos de luz que entran desde la superficie */
-.floodWater::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(105deg, rgba(255, 255, 255, 0.09) 0 38px, transparent 38px 150px);
-  mask-image: linear-gradient(180deg, #000, transparent 75%);
-}
-
-.surface {
-  position: absolute;
-  bottom: calc(100% - 1px);
-  left: 0;
-  width: 100%;
-  height: 30vh;
-  overflow: visible;
-}
-
-.surface path {
-  fill: #5ec0ef;
-}
-
-.surface .rim {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.9);
-  stroke-width: 3;
-}
-
-.floodBubbles {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.floodBubbles circle {
-  fill: rgba(255, 255, 255, 0.12);
-  stroke: rgba(255, 255, 255, 0.85);
-  stroke-width: 1.5;
-}
-
-.floodBubbles .shine {
-  fill: rgba(255, 255, 255, 0.8);
-  stroke: none;
+.split line {
+  stroke: var(--navy);
+  stroke-width: 2.5;
+  stroke-linecap: round;
 }
 
 .back {
@@ -161,16 +117,6 @@
     repeating-conic-gradient(var(--tile) 0 25%, var(--tile-light) 0 50%) 0 0 / 8px 8px border-box;
 }
 
-.pennants {
-  position: absolute;
-  top: var(--gutter);
-  bottom: var(--gutter);
-  left: calc(var(--deck-col) + var(--gutter) + 12px);
-  z-index: 2;
-  width: 24px;
-  height: calc(100% - 2 * var(--gutter));
-}
-
 .rope {
   position: relative;
   z-index: 1;
@@ -199,7 +145,7 @@
   display: flex;
   align-items: center;
   min-height: 104px;
-  padding: 16px 20px 16px 56px;
+  padding: 16px 20px 16px 28px;
 }
 
 /* Línea del fondo del carril terminada en T */
@@ -262,33 +208,9 @@
   border-radius: 4px;
 }
 
-.bubbles {
-  position: absolute;
-  left: 40px;
-  top: 50%;
-  z-index: 2;
-  display: flex;
-  gap: 5px;
-  translate: 0 -50%;
-}
-
-.bubbles span {
-  width: 7px;
-  height: 7px;
-  border: 1.5px solid rgba(255, 255, 255, 0.95);
-  border-radius: 50%;
-  opacity: 0;
-}
-
-.bubbles span:nth-child(even) {
-  width: 5px;
-  height: 5px;
-  translate: 0 -6px;
-}
-
 @media (max-width: 560px) {
   .lane {
-    padding: 14px 12px 14px 48px;
+    padding: 14px 12px 14px 18px;
   }
 
   .swimmer {

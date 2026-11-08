@@ -1,0 +1,81 @@
+.sentinel {
+  height: 1px;
+}
+
+.next,
+.prev {
+  position: fixed;
+  left: 50%;
+  z-index: 45;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  overflow: hidden;
+  font-family: 'Geist Variable', system-ui, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: #fbfaf7;
+  background: rgba(20, 19, 18, 0.88);
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Aviso de abajo: aparece al llegar al final y se llena mientras sigues deslizando */
+.next {
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 16px);
+  transition:
+    opacity 200ms ease,
+    transform 260ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.next[data-visible] {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+}
+
+.next:active {
+  transform: translate(-50%, 0) scale(0.97);
+}
+
+/* Aviso de arriba: baja con el dedo al tirar en lo alto de la página */
+.prev {
+  top: calc(8px + env(safe-area-inset-top));
+  transform: translate(-50%, -56px);
+  pointer-events: none;
+}
+
+.bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--c);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.arrow {
+  font-size: 1rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .next[data-visible] .arrow {
+    animation: nudge 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes nudge {
+  50% {
+    transform: translateY(-3px);
+  }
+}

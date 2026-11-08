@@ -76,6 +76,7 @@ a {
 
 @media print {
   [data-intro-line],
+  [data-portal],
   [data-no-print] {
     display: none !important;
   }

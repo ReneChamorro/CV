@@ -39,7 +39,9 @@ function markSeen(id) {
 // Solo cuenta como vista cuando termina: en desarrollo React monta dos veces y la segunda no debe ir rápida.
 export function playIntro(tl, id) {
   if (prefersReducedMotion()) {
+    // Sin movimiento: la sección aparece ya terminada con un fundido corto (solo opacidad).
     tl.progress(1)
+    gsap.fromTo('main', { opacity: 0 }, { opacity: 1, duration: 0.25, ease: 'power1.out' })
     return
   }
   if (readSeen().includes(id)) tl.timeScale(2)

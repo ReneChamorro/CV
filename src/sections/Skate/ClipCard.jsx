@@ -35,7 +35,11 @@ function Clip({ clip, poster, titulo }) {
 
   return (
     <div className={styles.vhs}>
-      <video ref={video} src={clip} poster={poster} muted loop playsInline preload="metadata" aria-label={titulo} />
+      {/* El .webm (más liviano) va primero; si no existe, el navegador usa el .mp4 */}
+      <video ref={video} poster={poster} muted loop playsInline preload="metadata" aria-label={titulo}>
+        <source src={clip.replace(/\.mp4$/, '.webm')} type="video/webm" />
+        <source src={clip} type="video/mp4" />
+      </video>
       <span className={styles.osd}>PLAY ▶</span>
     </div>
   )
@@ -52,11 +56,19 @@ export default function ClipCard({ video, index }) {
     </p>
   )
 
-  if (clip) {
+  // Solo miniatura (sin clip): la imagen fija en el marco VHS, también abre el reel.
+  if (clip || poster) {
     return (
       <a className={styles.card} style={style} href={reel || undefined} target="_blank" rel="noopener noreferrer">
         {sticker && <span className={styles.sticker}>{sticker}</span>}
-        <Clip clip={clip} poster={poster} titulo={titulo} />
+        {clip ? (
+          <Clip clip={clip} poster={poster} titulo={titulo} />
+        ) : (
+          <div className={styles.vhs}>
+            <img src={poster} alt={titulo} loading="lazy" />
+            <span className={styles.osd}>PLAY ▶</span>
+          </div>
+        )}
         {caption}
       </a>
     )

@@ -149,12 +149,17 @@
   color: color-mix(in srgb, currentColor 72%, transparent);
 }
 
-/* Móvil: franjas horizontales, cada una ya en su propia estética */
+/* Móvil: un menú que cabe en una pantalla, cinco franjas cada una ya en su propia estética */
 @media (max-width: 767px) {
-  .home,
-  .scope {
-    min-height: auto;
+  .home {
     overflow: visible;
+  }
+
+  .scope {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    height: 100svh;
+    min-height: 0;
   }
 
   .home :global([data-intro-line]) {
@@ -163,12 +168,21 @@
 
   .header {
     position: static;
-    padding: 72px 16px 28px;
+    padding: 64px 16px 18px;
+  }
+
+  .name {
+    font-size: 2.1rem;
+  }
+
+  .tag {
+    margin-top: 6px;
   }
 
   .strips {
     position: static;
     grid-template-columns: 1fr !important;
+    grid-template-rows: repeat(5, minmax(0, 1fr));
   }
 
   .strip {
@@ -180,7 +194,12 @@
   .stripBody {
     position: relative;
     inset: auto;
-    padding: 24px 16px 28px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-content: center;
+    column-gap: 16px;
+    height: 100%;
+    padding: 10px 16px;
   }
 
   .label,
@@ -190,14 +209,15 @@
 
   .label {
     display: block;
-    font-size: 1.6rem;
+    font-size: 1.35rem;
   }
 
   .miniLine {
+    grid-column: 1;
     display: block;
     width: 100%;
-    height: 36px;
-    margin: 12px 0 16px;
+    height: 22px;
+    margin-top: 6px;
     overflow: visible;
   }
 
@@ -208,8 +228,19 @@
   }
 
   .stats {
+    grid-column: 2;
+    grid-row: 1 / 3;
     display: flex;
-    flex-wrap: wrap;
-    gap: 12px 28px;
+    align-self: center;
+    gap: 16px;
+  }
+
+  /* En el menú solo caben dos datos por ámbito */
+  .stats div:nth-child(n + 3) {
+    display: none;
+  }
+
+  .stats dd {
+    font-size: 1.15rem;
   }
 }
